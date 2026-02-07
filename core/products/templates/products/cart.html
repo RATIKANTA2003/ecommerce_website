@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyper Cart | Delivery Protocol</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00c9ff;
+            --secondary: #00ffe0;
+            --dark: #0b0c2a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --danger: #ff4d4d;
+            --success: #00ff88;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #1a1b4b 0%, #0b0c2a 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background: rgba(11, 12, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 201, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand { font-size: 22px; font-weight: bold; color: white; text-decoration: none; letter-spacing: 2px; }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; font-weight: 600; transition: 0.3s; }
+        .navbar a:hover { color: var(--secondary); }
+
+        /* --- CONTAINER --- */
+        .container { padding: 40px 20px; max-width: 900px; margin: auto; }
+
+        .cart-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        h2 { 
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        /* --- MESSAGES BLOCK --- */
+        .message-container {
+            margin-bottom: 25px;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .alert-error { 
+            background: rgba(255, 77, 77, 0.15); 
+            border-color: var(--danger); 
+            color: #ff9999; 
+        }
+
+        /* --- ITEM LIST --- */
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .item-info { display: flex; flex-direction: column; }
+        .item-name { color: var(--secondary); font-weight: 500; font-size: 18px; letter-spacing: 0.5px; }
+        .item-qty { color: #888; font-size: 13px; margin-top: 4px; }
+
+        .btn-remove {
+            color: var(--danger);
+            text-decoration: none;
+            font-size: 11px;
+            border: 1px solid var(--danger);
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: 0.3s;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .btn-remove:hover { background: var(--danger); color: white; }
+
+        /* --- ADDRESS SECTION --- */
+        .address-section {
+            margin: 40px 0;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 201, 255, 0.2);
+        }
+        
+        .address-section h3 {
+            font-size: 18px;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        
+        textarea, input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        textarea:focus, input:focus { border-color: var(--secondary); background: rgba(0, 0, 0, 0.6); box-shadow: 0 0 10px rgba(0, 255, 224, 0.2); }
+        .input-row { display: flex; gap: 15px; }
+
+        /* --- SUMMARY & BUTTONS --- */
+        .summary-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: right;
+        }
+
+        .total-amount { font-size: 36px; font-weight: bold; color: var(--secondary); display: block; margin-bottom: 20px; text-shadow: 0 0 15px rgba(0, 255, 224, 0.3); }
+        .btn-group { display: flex; gap: 20px; justify-content: flex-end; align-items: center; }
+
+        .checkout-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 16px 45px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkout-btn:hover { box-shadow: 0 0 25px var(--primary); transform: translateY(-2px); }
+        .checkout-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .back-link:hover { color: var(--secondary); }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="{% url 'products' %}" class="navbar-brand">⚡ HYPER STORE</a>
+    <div>
+        <a href="{% url 'products' %}">Home</a>
+        <a href="{% url 'cart_page' %}" style="color: var(--secondary);">Cart ({{ cart_count|default:"0" }})</a>
+    </div>
+</div>
+
+<div class="container">
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-exclamation-triangle"></i> {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="cart-card">
+        <h2>🛍️ Your Hyper Inventory</h2>
+
+        {% if items %}
+            {% for item in items %}
+            <div class="item-row">
+                <div class="item-info">
+                    <span class="item-name">📦 {{ item.product_name }}</span>
+                    <span class="item-qty">Allocation: {{ item.quantity|default:"1" }} Unit(s)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 25px;">
+                    <span style="font-weight: bold; font-family: monospace; font-size: 18px;">₹{{ item.price }}</span>
+                    <a href="{% url 'remove_from_cart' item.id %}" class="btn-remove">
+                        <i class="fas fa-trash-alt"></i> REMOVE
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            <form action="{% url 'place_order' %}" method="POST" id="orderForm">
+                {% csrf_token %}
+                <div class="address-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> Delivery Protocol</h3>
+                    <div class="input-group">
+                        <textarea name="address" placeholder="Full Coordinates (Street, Apartment, Landmark)" rows="3" required></textarea>
+                    </div>
+                    <div class="input-row">
+                        <input type="text" name="city" placeholder="City" required>
+                        <input type="text" name="zip" placeholder="Zip/Postal Code" required>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <span style="color: #888; font-size: 14px; letter-spacing: 1px;">TOTAL CREDITS REQUIRED</span>
+                    <span class="total-amount">₹{{ total }}</span>
+                    
+                    <div class="btn-group">
+                        <a href="{% url 'products' %}" class="back-link">← Return to Modules</a>
+                        <button type="submit" class="checkout-btn" id="submitBtn">
+                            Initialize Order <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        {% else %}
+            <div style="text-align: center; padding: 60px 20px;">
+                <i class="fas fa-shopping-cart" style="font-size: 50px; color: var(--glass); margin-bottom: 20px;"></i>
+                <p style="font-size: 20px; color: #888; margin-bottom: 30px;">Your inventory is currently empty.</p>
+                <a href="{% url 'products' %}" class="checkout-btn" style="text-decoration: none; display: inline-flex; margin: auto;">Explore Modules</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Prevent double submissions and show loading state
+    const orderForm = document.getElementById('orderForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (orderForm) {
+        orderForm.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+    }
+</script>
+
+</body>
+</html>
