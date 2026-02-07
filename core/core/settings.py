@@ -8,26 +8,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-qa$y3ax(qz(v4b4d#=qv)&x=6$1==ga_5n@mch@6rh=wp&lz*h')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Automatically switches to False if you set the environment variable DEBUG=False on Render
+# Automatically switches to False on Render if you set the environment variable DEBUG=False
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Explicitly defining hosts to clear the DisallowedHost error
+# 1. ALLOWED HOSTS
+# We explicitly add your Render domain and a wildcard for safety.
 ALLOWED_HOSTS = [
-    'ecommerce-website-y9id.onrender.com', 
-    'localhost', 
-    '127.0.0.1', 
+    'ecommerce-website-y9id.onrender.com',
+    'localhost',
+    '127.0.0.1',
     '*'
 ]
 
-# This helper block ensures Render's dynamic host is always accepted
+# Helper to capture Render's dynamic hostname
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
+# 2. CSRF TRUSTED ORIGINS
+# Required for Django 4.0+ to prevent 403 errors when logging into Admin on Render
+CSRF_TRUSTED_ORIGINS = ['https://ecommerce-website-y9id.onrender.com']
+
 
 # Application definition
 INSTALLED_APPS = [
-    'jazzmin',
+    'jazzmin',  # Jazzmin must stay at the top
     'products',
     'accounts',
     'django.contrib.admin',
@@ -40,7 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Vital for Jazzmin/CSS on Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Vital for serving CSS/JS on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,7 +59,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Jazzmin Settings
+# Jazzmin Amazon-Style Admin Settings
 JAZZMIN_SETTINGS = {
     "site_title": "Hyper Seller Central",
     "site_header": "Hyper Admin",
@@ -114,10 +119,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# 3. STATIC FILES CONFIGURATION (WhiteNoise)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-# Use Manifest storage to help WhiteNoise cache files efficiently
+# Use Manifest storage to compress files and handle caching automatically
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
