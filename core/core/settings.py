@@ -8,11 +8,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-qa$y3ax(qz(v4b4d#=qv)&x=6$1==ga_5n@mch@6rh=wp&lz*h')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Set to False on Render, True for local testing
+# Automatically switches to False if you set the environment variable DEBUG=False on Render
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Allow Render URL and local hosts
-ALLOWED_HOSTS = ['*'] 
+# Explicitly defining hosts to clear the DisallowedHost error
+ALLOWED_HOSTS = [
+    'ecommerce-website-y9id.onrender.com', 
+    'localhost', 
+    '127.0.0.1', 
+    '*'
+]
+
+# This helper block ensures Render's dynamic host is always accepted
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -33,7 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Necessary for CSS on Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Vital for Jazzmin/CSS on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,7 +69,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database - Note: SQLite will reset on every Render deploy
+# Database - Note: SQLite will reset on every Render deploy/restart
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -110,6 +117,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Use Manifest storage to help WhiteNoise cache files efficiently
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
