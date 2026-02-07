@@ -9,7 +9,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-qa$y3ax(qz(v4b4d#=qv)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Automatically switches to False on Render if you set the environment variable DEBUG=False
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'False'
 
 # 1. ALLOWED HOSTS
 # We explicitly add your Render domain and a wildcard for safety.
